@@ -1,0 +1,53 @@
+import hashlib
+from collections import Counter
+
+def get_md5_result(seed):
+    """
+    Nhập vào seed, trả về giá trị và kết quả Tài/Xỉu
+    """
+    md5_hash = hashlib.md5(seed.encode()).hexdigest()
+    last5 = md5_hash[-5:]
+    decimal_value = int(last5, 16)  # chuyển hex -> int
+    result = decimal_value % 100  # từ 0–99
+
+    if result <= 49:
+        return result, "Xỉu"
+    else:
+        return result, "Tài"
+
+def analyze_results(seed_list):
+    """
+    Nhập danh sách seed, trả về phần trăm Tài/Xỉu
+    """
+    outcomes = [get_md5_result(seed)[1] for seed in seed_list]
+    counter = Counter(outcomes)
+    total = len(outcomes)
+    print("\n📊 Phân tích kết quả:")
+    for k in counter:
+        print(f"{k}: {counter[k]} lần - {counter[k] / total * 100:.2f}%")
+
+def main():
+    print("=== TOOL TÀI XỈU MD5 ===")
+    print("1. Nhập 1 chuỗi MD5 để dự đoán kết quả")
+    print("2. Nhập nhiều chuỗi MD5 để phân tích tỉ lệ phần trăm")
+    choice = input("Chọn chế độ (1 hoặc 2): ")
+
+    if choice == "1":
+        seed = input("Nhập chuỗi MD5: ")
+        value, outcome = get_md5_result(seed)
+        print(f"Kết quả: {value} - {outcome}")
+    elif choice == "2":
+        print("Nhập danh sách mã MD5, mỗi dòng là một chuỗi (nhập 'done' để kết thúc):")
+        seeds = []
+        while True:
+            line = input()
+            if line.lower() == "done":
+                break
+            if line.strip():
+                seeds.append(line.strip())
+        analyze_results(seeds)
+    else:
+        print("Lựa chọn không hợp lệ.")
+
+if __name__ == "__main__":
+    main()
